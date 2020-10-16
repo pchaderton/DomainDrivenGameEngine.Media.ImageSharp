@@ -3,10 +3,10 @@
   <PropertyGroup>
     <PackageId>DomainDrivenGameEngine.Media.ImageSharp</PackageId>
     <Description>SixLabors.ImageSharp implementations of source interfaces defined in the DomainDrivenGameEngine.Media package.</Description>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Authors>Preston Chaderton</Authors>
     <Company>Preston Chaderton</Company>
-    <RepositoryUrl>https://github.com/pchaderton/DomainDrivenGameEngine.Media</RepositoryUrl>
+    <RepositoryUrl>https://github.com/pchaderton/DomainDrivenGameEngine.Media.ImageSharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
