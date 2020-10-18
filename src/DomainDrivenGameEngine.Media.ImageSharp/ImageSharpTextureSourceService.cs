@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using DomainDriveGameEngine.Media.Models;
-using DomainDriveGameEngine.Media.Services;
+using DomainDrivenGameEngine.Media.Models;
+using DomainDrivenGameEngine.Media.Services;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
