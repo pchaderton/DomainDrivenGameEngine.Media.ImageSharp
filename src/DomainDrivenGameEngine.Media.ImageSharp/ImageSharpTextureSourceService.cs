@@ -10,7 +10,7 @@ namespace DomainDrivenGameEngine.Media.ImageSharp
     /// <summary>
     /// A SixLabors.ImageSharp implementation of a <see cref="IMediaSourceService{Texture}"/> for use with projects utilizing DomainDrivenGameEngine.Media.
     /// </summary>
-    public class ImageSharpTextureSourceService : BaseStreamMediaSourceService<Texture>
+    public class ImageSharpTextureSourceService : BaseMediaSourceService<Texture>
     {
         /// <summary>
         /// The extensions this source service supports.
@@ -36,18 +36,17 @@ namespace DomainDrivenGameEngine.Media.ImageSharp
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageSharpTextureSourceService"/> class.
         /// </summary>
-        /// <param name="fileStreamService">A <see cref="IFileStreamService"/> to use to generate streams to files.</param>
-        public ImageSharpTextureSourceService(IFileStreamService fileStreamService)
-            : base(SupportedExtensions, fileStreamService)
+        public ImageSharpTextureSourceService()
+            : base(SupportedExtensions)
         {
         }
 
         /// <inheritdoc/>
-        public override Texture Load(Stream stream, string path)
+        public override Texture Load(Stream stream, string path, string extension)
         {
             // To avoid running branching logic on a per pixel basis, branch here depending on if the
             // image format supports an alpha channel or not.
-            return SupportedExtensionsWithAlpha.Contains(Path.GetExtension(path))
+            return SupportedExtensionsWithAlpha.Contains(extension)
                 ? LoadRgba8Texture(stream)
                 : LoadRgb8Texture(stream);
         }
@@ -92,7 +91,7 @@ namespace DomainDrivenGameEngine.Media.ImageSharp
             var pixelFormat = PixelFormat.Rgb8;
             var pixelFormatDetails = PixelFormatDetailsAttribute.GetPixelFormatDetails(pixelFormat);
 
-            using (var image = Image.Load<Rgba32>(stream))
+            using (var image = Image.Load<Rgb24>(stream))
             {
                 var bytes = new byte[image.Width * image.Height * pixelFormatDetails.BytesPerPixel];
                 for (var y = 0; y < image.Height; y++)
