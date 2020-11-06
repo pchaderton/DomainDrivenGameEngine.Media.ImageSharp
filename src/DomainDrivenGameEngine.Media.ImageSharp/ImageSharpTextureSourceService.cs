@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using DomainDrivenGameEngine.Media.Models;
 using DomainDrivenGameEngine.Media.Services;
@@ -77,7 +78,7 @@ namespace DomainDrivenGameEngine.Media.ImageSharp
                     }
                 }
 
-                return new Texture(image.Width, image.Height, pixelFormat, bytes);
+                return new Texture(image.Width, image.Height, pixelFormat, new ReadOnlyCollection<byte>(bytes));
             }
         }
 
@@ -106,7 +107,7 @@ namespace DomainDrivenGameEngine.Media.ImageSharp
                     }
                 }
 
-                return new Texture(image.Width, image.Height, pixelFormat, bytes);
+                return new Texture(image.Width, image.Height, pixelFormat, new ReadOnlyCollection<byte>(bytes));
             }
         }
     }
