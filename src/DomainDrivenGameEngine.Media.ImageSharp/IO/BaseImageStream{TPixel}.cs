@@ -18,6 +18,16 @@ namespace DomainDrivenGameEngine.Media.ImageSharp.IO
         private int _bytesPerPixel;
 
         /// <summary>
+        /// The current pixel bytes being read from.
+        /// </summary>
+        private byte[] _currentPixelBytes;
+
+        /// <summary>
+        /// The current index to read from the current pixel bytes.
+        /// </summary>
+        private int _currentPixelBytesIndex;
+
+        /// <summary>
         /// The current x cursor position on the image.
         /// </summary>
         private int _x;
@@ -43,6 +53,8 @@ namespace DomainDrivenGameEngine.Media.ImageSharp.IO
             _bytesPerPixel = bytesPerPixel;
             _x = 0;
             _y = 0;
+            _currentPixelBytes = null;
+            _currentPixelBytesIndex = 0;
         }
 
         /// <inheritdoc/>
@@ -60,16 +72,23 @@ namespace DomainDrivenGameEngine.Media.ImageSharp.IO
         /// <inheritdoc/>
         public override long Position
         {
-            get => (_y * Image.Height * _bytesPerPixel) + (_x * _bytesPerPixel);
+            get => (_y * Image.Height * _bytesPerPixel) + (_x * _bytesPerPixel) + _currentPixelBytesIndex;
             set
             {
-                if (value % _bytesPerPixel != 0)
-                {
-                    throw new ArgumentException($"Unable to set a position that isn't a multiple of {_bytesPerPixel}");
-                }
+                var newY = (int)(value / (Image.Width * _bytesPerPixel));
+                var newX = (int)(value % (Image.Width * _bytesPerPixel));
 
-                _y = (int)(value / (Image.Width * _bytesPerPixel));
-                _x = (int)(value % (Image.Width * _bytesPerPixel));
+                if (_x != newX || _y != newY)
+                {
+                    _x = newX;
+                    _y = newY;
+                    _currentPixelBytes = ReadPixelBytes(newX, newY);
+                    _currentPixelBytesIndex = (int)(value % _bytesPerPixel);
+                }
+                else
+                {
+                    _currentPixelBytesIndex = (int)(value % _bytesPerPixel);
+                }
             }
         }
 
@@ -116,32 +135,40 @@ namespace DomainDrivenGameEngine.Media.ImageSharp.IO
                 throw new ArgumentException($"A valid{nameof(count)} is required.");
             }
 
-            if (count % _bytesPerPixel != 0)
+            if (_y >= Image.Height)
             {
-                throw new ArgumentException($"Must read bytes with a {nameof(count)} that is a multiple of {_bytesPerPixel}");
+                return 0;
             }
 
             var originalCount = count;
             while (count > 0)
             {
-                var pixelBytes = ReadPixelBytes(_x, _y);
-                for (var i = 0; i < _bytesPerPixel; i++)
+                if (_currentPixelBytes == null)
                 {
-                    buffer[offset + i] = pixelBytes[i];
+                    _currentPixelBytes = ReadPixelBytes(_x, _y);
                 }
-
-                count -= _bytesPerPixel;
-                offset += _bytesPerPixel;
-
-                _x = (_x + 1) % Image.Width;
-                if (_x == 0)
+                else if (_currentPixelBytesIndex >= _currentPixelBytes.Length)
                 {
-                    _y = (_y + 1) % Image.Height;
-                    if (_y == 0)
+                    _x++;
+                    if (_x >= Image.Width)
                     {
-                        break;
+                        _x = 0;
+                        _y++;
+
+                        if (_y >= Image.Height)
+                        {
+                            _currentPixelBytes = null;
+                            _currentPixelBytesIndex = 0;
+                            break;
+                        }
                     }
+
+                    _currentPixelBytes = ReadPixelBytes(_x, _y);
+                    _currentPixelBytesIndex = 0;
                 }
+
+                buffer[offset++] = _currentPixelBytes[_currentPixelBytesIndex++];
+                count--;
             }
 
             return originalCount - count;
