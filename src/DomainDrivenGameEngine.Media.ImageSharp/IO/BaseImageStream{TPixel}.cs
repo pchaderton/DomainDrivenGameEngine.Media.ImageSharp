@@ -55,7 +55,7 @@ namespace DomainDrivenGameEngine.Media.ImageSharp.IO
         public override bool CanWrite => false;
 
         /// <inheritdoc/>
-        public override long Length => throw new NotImplementedException();
+        public override long Length => Image.Height * Image.Width * _bytesPerPixel;
 
         /// <inheritdoc/>
         public override long Position
