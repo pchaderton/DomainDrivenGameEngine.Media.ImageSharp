@@ -3,7 +3,7 @@
   <PropertyGroup>
     <PackageId>DomainDrivenGameEngine.Media.ImageSharp</PackageId>
     <Description>SixLabors.ImageSharp implementations of source interfaces defined in the DomainDrivenGameEngine.Media package.</Description>
-    <Version>0.2.2</Version>
+    <Version>0.2.3</Version>
     <Authors>Preston Chaderton</Authors>
     <Company>Preston Chaderton</Company>
     <RepositoryUrl>https://github.com/pchaderton/DomainDrivenGameEngine.Media.ImageSharp</RepositoryUrl>
@@ -15,7 +15,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="DomainDrivenGameEngine.Media" Version="0.2.0" />
+    <PackageReference Include="DomainDrivenGameEngine.Media" Version="0.2.1" />
     <PackageReference Include="DomainDrivenGameEngine.RuleSet" Version="0.1.2">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

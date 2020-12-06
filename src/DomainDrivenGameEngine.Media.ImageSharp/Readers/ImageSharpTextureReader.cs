@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
-using DomainDrivenGameEngine.Media.ImageSharp.IO;
 using DomainDrivenGameEngine.Media.Models;
 using DomainDrivenGameEngine.Media.Readers;
 using SixLabors.ImageSharp;
@@ -59,9 +59,25 @@ namespace DomainDrivenGameEngine.Media.ImageSharp.Readers
         /// <returns>The loaded <see cref="Texture"/>.</returns>
         private Texture LoadRgba32Texture(Stream stream)
         {
-            var image = Image.Load<Rgba32>(stream);
+            using (var image = Image.Load<Rgba32>(stream))
+            {
+                var bytes = new byte[image.Width * image.Height * 4];
+                var offset = 0;
+                for (var y = 0; y < image.Height; y++)
+                {
+                    for (var x = 0; x < image.Width; x++)
+                    {
+                        var pixel = image[x, y];
+                        bytes[offset] = pixel.R;
+                        bytes[offset + 1] = pixel.G;
+                        bytes[offset + 2] = pixel.B;
+                        bytes[offset + 3] = pixel.A;
+                        offset += 4;
+                    }
+                }
 
-            return new Texture(image.Width, image.Height, TextureFormat.Rgba32, new Rgba32ImageStream(image), stream);
+                return new Texture(image.Width, image.Height, TextureFormat.Rgba32, new ReadOnlyCollection<byte>(bytes), stream);
+            }
         }
 
         /// <summary>
@@ -71,9 +87,24 @@ namespace DomainDrivenGameEngine.Media.ImageSharp.Readers
         /// <returns>The loaded <see cref="Texture"/>.</returns>
         private Texture LoadRgb8Texture(Stream stream)
         {
-            var image = Image.Load<Rgb24>(stream);
+            using (var image = Image.Load<Rgb24>(stream))
+            {
+                var bytes = new byte[image.Width * image.Height * 3];
+                var offset = 0;
+                for (var y = 0; y < image.Height; y++)
+                {
+                    for (var x = 0; x < image.Width; x++)
+                    {
+                        var pixel = image[x, y];
+                        bytes[offset] = pixel.R;
+                        bytes[offset + 1] = pixel.G;
+                        bytes[offset + 2] = pixel.B;
+                        offset += 3;
+                    }
+                }
 
-            return new Texture(image.Width, image.Height, TextureFormat.Rgb24, new Rgb24ImageStream(image), stream);
+                return new Texture(image.Width, image.Height, TextureFormat.Rgb24, new ReadOnlyCollection<byte>(bytes), stream);
+            }
         }
     }
 }
